@@ -4,6 +4,9 @@ costanzo/
 .DS_Store
 # C extensions
 *.so
+# ignore data files
+.csv
+.tsv
 
 # Packages
 *.egg
