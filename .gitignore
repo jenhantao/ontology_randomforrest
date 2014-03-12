@@ -2,6 +2,7 @@ costanzo/
 *.swp
 *.py[cod]
 .DS_Store
+.txt
 # C extensions
 *.so
 # ignore data files
