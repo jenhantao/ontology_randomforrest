@@ -5,9 +5,10 @@
 
 import sys
 from igraph import *
+from numpy import *
 
 # build ontology tree
-with open('/Users/jenhantao/Documents/ontology_randomforrest/GO_biological_process.term_term.txt') as f:
+with open('/Users/Admin/Documents/ontology_randomforrest/GO_biological_process.term_term.txt') as f:
 	ontologyData = f.readlines()
 # map each child parent term to a numeric value
 vertexCount = 0
@@ -47,7 +48,7 @@ degrees = ontologyTree.degree(type="in")
 root = degrees.index(0)
 
 # read in gene term relations to build term gene sets
-with open('/Users/jenhantao/Documents/ontology_randomforrest/GO_biological_process.gene_term_fixed.txt') as f:
+with open('/Users/Admin/Documents/ontology_randomforrest/GO_biological_process.gene_term_fixed.txt') as f:
 	geneTermData = f.readlines()
 termGeneArrayHash = {} # key: term, value: array of genes corresponding to term
 for line in geneTermData:
@@ -61,13 +62,13 @@ for line in geneTermData:
 del geneTermData
 # read in tested gene pairs and Labels and build genepairLabelHash
 genepairLabelHash = {} # key tested gene pair in the form of a tuple, value: label - 1 if there is a negative interaction and 0 otherwise
-with open('/Users/jenhantao/Documents/ontology_randomforrest/costanzo/true_labels.txt') as f:
+with open('/Users/Admin/Documents/ontology_randomforrest/costanzo/true_labels.txt') as f:
 	trueLabelData = f.readlines()
 labels = []
 for line in trueLabelData:
 	labels.append(int(line.strip()))
 del trueLabelData
-with open('/Users/jenhantao/Documents/ontology_randomforrest/costanzo/gene_sets.txt') as f:
+with open('/Users/Admin/Documents/ontology_randomforrest/costanzo/gene_sets.txt') as f:
 	genePairData = f.readlines()
 for i in range(len(genePairData)):
 	tokens = genePairData[i].strip().split("$")
@@ -80,7 +81,7 @@ backgroundRate = float(sum(labels))/float(len(labels)) # exactly 0.1 <- this is 
 
 # find interesting gene pairs
 terms = sorted(termGeneArrayHash.keys()) # term pairs are always examined in lexographical order
-
+likelihoodArray = zeros(shape = (i, j))
 for i in range(len(terms)-1):
 	for j in range(i+1,len(terms)):
 		term1 = terms[i]
@@ -105,10 +106,13 @@ for i in range(len(terms)-1):
 		else:
 			rate = 0.0
 		likelihoodEnrichment = rate/backgroundRate
-		if likelihoodEnrichment > 1.0:
-			print term1, term2, likelihoodEnrichment
+#		if likelihoodEnrichment > 1.0:
+#			print term1, term2, likelihoodEnrichment
+		likelihoodArray[i][j] = rate
+		likelihoodArray[j][i] = rate
 		
-
+from tempfile import TemporaryFile
+save("likelihoodArray",likelihoodArray)
 
 
 
