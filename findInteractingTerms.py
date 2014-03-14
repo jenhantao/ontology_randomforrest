@@ -1,14 +1,14 @@
 # reads in gene ontology terms and true labels to find interesting terms 
 
-# inputs: gene ontology, gene to term mapping,gene pairs tested true labels,
-# gene ontology is a tsv given in the format: child term, parent term relation
+# inputs: gene ontology - parent to child relations, gene to term mapping,true labels,gene pairs tested
 
 import sys
 from igraph import *
 from numpy import *
 
 # build ontology tree
-with open('/Users/Admin/Documents/ontology_randomforrest/GO_biological_process.term_term.txt') as f:
+#with open('/Users/Admin/Documents/ontology_randomforrest/GO_biological_process.term_term.txt') as f:
+with open(sys.argv[1]) as f:
 	ontologyData = f.readlines()
 # map each child parent term to a numeric value
 vertexCount = 0
@@ -48,7 +48,8 @@ degrees = ontologyTree.degree(type="in")
 root = degrees.index(0)
 
 # read in gene term relations to build term gene sets
-with open('/Users/Admin/Documents/ontology_randomforrest/GO_biological_process.gene_term_fixed.txt') as f:
+#with open('/Users/Admin/Documents/ontology_randomforrest/GO_biological_process.gene_term_fixed.txt') as f:
+with open(sys.argv[2]) as f:
 	geneTermData = f.readlines()
 termGeneArrayHash = {} # key: term, value: array of genes corresponding to term
 for line in geneTermData:
@@ -62,13 +63,15 @@ for line in geneTermData:
 del geneTermData
 # read in tested gene pairs and Labels and build genepairLabelHash
 genepairLabelHash = {} # key tested gene pair in the form of a tuple, value: label - 1 if there is a negative interaction and 0 otherwise
-with open('/Users/Admin/Documents/ontology_randomforrest/costanzo/true_labels.txt') as f:
+#with open('/Users/Admin/Documents/ontology_randomforrest/costanzo/true_labels.txt') as f:
+with open(sys.argv[3]) as f:
 	trueLabelData = f.readlines()
 labels = []
 for line in trueLabelData:
 	labels.append(int(line.strip()))
 del trueLabelData
-with open('/Users/Admin/Documents/ontology_randomforrest/costanzo/gene_sets.txt') as f:
+#with open('/Users/Admin/Documents/ontology_randomforrest/costanzo/gene_sets.txt') as f:
+with open(sys.argv[4]) as f:
 	genePairData = f.readlines()
 for i in range(len(genePairData)):
 	tokens = genePairData[i].strip().split("$")
@@ -81,7 +84,7 @@ backgroundRate = float(sum(labels))/float(len(labels)) # exactly 0.1 <- this is 
 
 # find interesting gene pairs
 terms = sorted(termGeneArrayHash.keys()) # term pairs are always examined in lexographical order
-likelihoodArray = zeros(shape = (i, j))
+likelihoodArray = zeros(shape = (len(terms),len(terms)))
 for i in range(len(terms)-1):
 	for j in range(i+1,len(terms)):
 		term1 = terms[i]
