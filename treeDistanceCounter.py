@@ -23,7 +23,10 @@ for line in ontologyData:
 terms = sorted(list(set(terms)))
 for i in range(len(terms)):
 	termIndexHash[terms[i]] = i
-save(sys.argv[1].replace(".txt","_terms"),terms)
+tokens = sys.argv[1].split("/")
+tokens[-1] = "terms"
+
+savez_compressed("/".join(tokens),terms)
 	
 treeSize = []
 # read in tree
@@ -75,7 +78,7 @@ for i in range(len(tree.vs)-1):
 			if not str(distances[i][j]) == "inf":
 				distanceArray[index1][index2] += distances[i][j]
 				distanceArray[index2][index1] += distances[i][j]
-save(treePath.replace("txt","npy"), distances)
+savez_compressed(treePath.replace(".txt",""), distances)
 	
 	
 
