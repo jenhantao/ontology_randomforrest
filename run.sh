@@ -5,14 +5,20 @@ treeFiles+=($treeFileSplit)
 done
 
 # loop over tree files and compute distances
-for treeFile in ${treeFiles[@]}
+length=${#treeFiles[*]}
+#for treeFile in ${treeFiles[@]}
+for (( i=0; i<$(( $length )); i++ ))
 do
+if [ $(expr $i % 8) = 0 ]
+then
+sleep 150
+fi
+treeFile="${treeFiles[$i]}"
 pythonOut=${treeFile/.txt/_distance.npy}
 if [ ! -f $pythonOut ]
 then
 echo python treeDistanceCounter.py $treeFile $2
-# submit jobs to cluster
-qsub python treeDistanceCounter.py $treeFile
+python treeDistanceCounter.py $treeFile $2 &
 fi
 done
 
