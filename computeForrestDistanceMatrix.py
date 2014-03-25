@@ -10,6 +10,7 @@ from os.path import isfile, join
 from numpy import *
 
 path = sys.argv[1]
+outName = sys.argv[1].split("/")[-2].strip()+"_forrestArray"
 filePaths= [ f for f in listdir(path) if isfile(join(path,f)) and "npz" in f and not "term" in f]
 forrestDistanceArray = None # stores the sum of all distances seen at every position
 nonZeroPositionsArray = None # stores the number of ocurrences of nonzero distance values at each position
@@ -23,6 +24,7 @@ for fp in filePaths:
 	currentArray = load(path+fp)
 	currentArray = currentArray[currentArray.files[0]]
 	currentNonZeros= (currentArray > 0) * 1
+	print counter
 	if forrestDistanceArray ==None:
 		forrestDistanceArray = currentArray
 		nonZeroPositionArray = currentNonZeros
@@ -31,7 +33,9 @@ for fp in filePaths:
 		nonZeroPositionArray += currentNonZeros
 
 # normalize arrays 
-outputArray = forrestDistanceArray/nonZeroPositionArray
+print forrestDistanceArray
+print nonZeroPositionArray
+outputArray = nonZeroPositionArray/forrestDistanceArray
 outputArray[isnan(outputArray)] =0
 print outputArray
-savez_compressed("forrestDistances",outputArray)
+savez_compressed(outName, outputArray)

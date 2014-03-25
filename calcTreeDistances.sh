@@ -17,7 +17,7 @@ then
 	if [ $(expr $i % 8) = 0 ]
 	then
 	echo "napping"
-	sleep 150
+#	sleep 150
 	fi
 echo python treeDistanceCounter.py $treeFile $2
 python treeDistanceCounter.py $treeFile $2 &

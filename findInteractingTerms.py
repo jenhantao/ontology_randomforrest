@@ -86,10 +86,10 @@ backgroundRate = float(sum(labels))/float(len(labels)) # exactly 0.1 <- this is 
 terms = sorted(termGeneArrayHash.keys()) # term pairs are always examined in lexographical order
 likelihoodArray = zeros(shape = (len(terms),len(terms)))
 counter = 0
+numGeneThreshold = int(sys.argv[5])
 for i in range(len(terms)-1):
 	for j in range(i+1,len(terms)):
 		counter += 1
-		print counter
 		term1 = terms[i]
 		term2 = terms[j]	
 		# compute sets for each term, the set of genes that appear under term1, but not term2 as well as the set of genes that appear under term2, but not term1
@@ -107,7 +107,7 @@ for i in range(len(terms)-1):
 					numTestedPairs += 1
 					if genepairLabelHash[currentGenePair] == 1:
 						numInteractingPairs += 1
-		if numInteractingPairs > 0:
+		if numInteractingPairs > 0 and len(geneSet1) > numGeneThreshold and len(geneSet2) > numGeneThreshold:
 			rate = float(numInteractingPairs)/float(numTestedPairs)
 		else:
 			rate = 0.0
@@ -118,7 +118,7 @@ for i in range(len(terms)-1):
 		likelihoodArray[j][i] = rate
 		
 from tempfile import TemporaryFile
-savez_compressed("likelihoodArray",likelihoodArray)
+savez_compressed("likelihoodArray_threshold",likelihoodArray)
 
 
 
